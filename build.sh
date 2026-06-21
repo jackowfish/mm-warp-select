@@ -12,7 +12,7 @@ cd "$(dirname "$0")"
 
 CC="${CC:-/opt/homebrew/opt/llvm/bin/clang}"
 LD="${LD:-/opt/homebrew/bin/ld.lld}"
-RECOMP_MOD_TOOL="${RECOMP_MOD_TOOL:-/tmp/N64Recomp/build/RecompModTool}"
+RECOMP_MOD_TOOL="${RECOMP_MOD_TOOL:-./tools/RecompModTool}"
 
 echo ">> Building mod ELF"
 make CC="$CC" LD="$LD" -j8

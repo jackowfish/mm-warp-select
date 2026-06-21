@@ -19,3 +19,6 @@ build/
 
 # Texture generator previews
 tools/prompt_preview*.png
+
+# Prebuilt RecompModTool (host binary, not source)
+tools/RecompModTool
