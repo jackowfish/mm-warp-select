@@ -1,5 +1,5 @@
 /*
- * Warp From Map
+ * Warp Select
  *
  * Adds a "warp map" mode to the pause menu's world-map page so you can pick a
  * Song of Soaring destination directly from the map instead of playing the song.
@@ -110,7 +110,7 @@ static void exit_warp_select(PlayState* play) {
 }
 
 // Runs before the pause menu's per-frame update.
-RECOMP_HOOK("KaleidoScope_Update") void warp_from_map_update(PlayState* play) {
+RECOMP_HOOK("KaleidoScope_Update") void warp_select_update(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     Input* input = CONTROLLER1(&play->state);
     u16 toggle = get_toggle_btn();
@@ -158,7 +158,7 @@ static void draw_prompt(PlayState* play) {
 }
 
 // Runs after the world map page finishes drawing, so our prompt lands on top.
-RECOMP_HOOK_RETURN("KaleidoScope_DrawWorldMap") void warp_from_map_draw(PlayState* play) {
+RECOMP_HOOK_RETURN("KaleidoScope_DrawWorldMap") void warp_select_draw(PlayState* play) {
     if (recomp_get_config_u32("show_prompt") != 0) { // 0 = Shown
         return;
     }

@@ -14,8 +14,8 @@ import shutil
 import zipfile
 
 # --- Edit these if you want a different Thunderstore identity ---------------
-NAME = "Warp_From_Map"  # Thunderstore package name (no spaces; [A-Za-z0-9_])
-WEBSITE_URL = "https://github.com/jackowfish/mm-warp-from-map"
+NAME = "Warp_Select"  # Thunderstore package name (no spaces; [A-Za-z0-9_])
+WEBSITE_URL = "https://github.com/jackowfish/mm-warp-select"
 DEPENDENCIES = []
 # ---------------------------------------------------------------------------
 

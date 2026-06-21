@@ -1,4 +1,4 @@
-# Warp From Map
+# Warp Select
 
 A mod for [Majora's Mask: Recompiled](https://github.com/Mr-Wiseguy/Zelda64Recomp) that lets you
 pick a Song of Soaring destination from the pause-menu map instead of playing the song.
@@ -16,5 +16,5 @@ Needs LLVM `clang` + `ld.lld` (Apple clang won't work) and
 [`RecompModTool`](https://github.com/N64Recomp/N64Recomp). Symlink or submodule `mm-decomp`
 ([zeldaret/mm](https://github.com/zeldaret/mm)) and `Zelda64RecompSyms`
 ([Zelda64Recomp/Zelda64RecompSyms](https://github.com/Zelda64Recomp/Zelda64RecompSyms)) at the repo
-root, then run `./build.sh` to produce `build/warp_from_map.nrm`. Drag that onto the game window to
+root, then run `./build.sh` to produce `build/warp_select.nrm`. Drag that onto the game window to
 install.

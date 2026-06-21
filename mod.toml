@@ -1,9 +1,9 @@
-# Config file for the Warp From Map mod for Majora's Mask: Recompiled.
+# Config file for the Warp Select mod for Majora's Mask: Recompiled.
 
 [manifest]
-id = "mm_recomp_warp_from_map"
+id = "mm_recomp_warp_select"
 version = "1.0.0"
-display_name = "Warp From Map"
+display_name = "Warp Select"
 description = """
 Select a Song of Soaring destination straight from the world map in the pause menu \
 instead of playing the song.
@@ -22,7 +22,7 @@ native_libraries = [ ]
 
 [inputs]
 elf_path = "build/mod.elf"
-mod_filename = "warp_from_map"
+mod_filename = "warp_select"
 func_reference_syms_file = "Zelda64RecompSyms/mm.us.rev1.syms.toml"
 data_reference_syms_files = [ "Zelda64RecompSyms/mm.us.rev1.datasyms.toml", "Zelda64RecompSyms/mm.us.rev1.datasyms_static.toml" ]
 additional_files = [ "thumb.png" ]

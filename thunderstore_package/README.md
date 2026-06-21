@@ -1,4 +1,4 @@
-# Warp From Map
+# Warp Select
 
 Pick a Song of Soaring destination from the pause-menu map instead of playing the song.
 
@@ -10,4 +10,4 @@ The button and the on-screen prompt are configurable in the mod menu. It works b
 page into the game's own owl-warp selector (the one the Song of Soaring uses), so the map, cursor,
 confirmation, and warp are all native.
 
-Source: https://github.com/jackowfish/mm-warp-from-map
+Source: https://github.com/jackowfish/mm-warp-select
