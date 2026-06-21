@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+- Move the on-screen prompt to the top-left of the map page (left of the MAP header)
+  and draw it in black.
+- Render the prompt from a higher-resolution, bold source texture so it stays sharp at
+  high internal resolutions instead of looking blurry.
+
 ## 1.0.1
 - Fix a crash on load. The mod now hooks the resident pause-menu wrappers
   (KaleidoScopeCall_Update / KaleidoScopeCall_Draw) instead of the relocatable

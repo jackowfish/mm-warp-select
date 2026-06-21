@@ -144,11 +144,24 @@ RECOMP_HOOK("KaleidoScopeCall_Update") void warp_select_update(PlayState* play) 
     }
 }
 
-// Draw the "press C-Down for Warp Map" prompt over the world map page.
+// On-screen footprint (the source texture is authored at 2x this in each axis) and
+// position: top-left of the map page, just left of the centered "MAP" header.
+#define WARP_PROMPT_SCR_W 128
+#define WARP_PROMPT_SCR_H 16
+#define WARP_PROMPT_SCR_X 8
+#define WARP_PROMPT_SCR_Y 30
+// Upload the texture in 8-row strips so each TMEM tile stays well under the 4 KB limit.
+#define WARP_PROMPT_STRIP_ROWS 8
+#define WARP_PROMPT_STRIPS (WARP_PROMPT_TEX_HEIGHT / WARP_PROMPT_STRIP_ROWS)
+
+// Draw the "press C-Down for Warp Map" prompt over the world map page, in black.
 static void draw_prompt(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
-    s32 x = (SCREEN_WIDTH - WARP_PROMPT_TEX_WIDTH) / 2;
-    s32 y = 202;
+    s32 stripScrH = WARP_PROMPT_SCR_H / WARP_PROMPT_STRIPS;
+    // 10.5 fixed-point texels-per-pixel; maps the larger source onto the on-screen rect.
+    s32 dsdx = (WARP_PROMPT_TEX_WIDTH << 10) / WARP_PROMPT_SCR_W;
+    s32 dtdy = (WARP_PROMPT_STRIP_ROWS << 10) / stripScrH;
+    s32 i;
 
     OPEN_DISPS(play->state.gfxCtx);
 
@@ -157,14 +170,20 @@ static void draw_prompt(PlayState* play) {
     gDPSetRenderMode(POLY_OPA_DISP++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     gDPSetCombineMode(POLY_OPA_DISP++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
     gDPSetTextureFilter(POLY_OPA_DISP++, G_TF_BILERP);
-    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pauseCtx->alpha);
+    gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 0, 0, 0, pauseCtx->alpha); // black text
 
-    gDPLoadTextureBlock(POLY_OPA_DISP++, gWarpPromptTex, G_IM_FMT_IA, G_IM_SIZ_8b, WARP_PROMPT_TEX_WIDTH,
-                        WARP_PROMPT_TEX_HEIGHT, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK,
-                        G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    for (i = 0; i < WARP_PROMPT_STRIPS; i++) {
+        s32 sy = WARP_PROMPT_SCR_Y + (i * stripScrH);
 
-    gSPTextureRectangle(POLY_OPA_DISP++, x << 2, y << 2, (x + WARP_PROMPT_TEX_WIDTH) << 2, (y + WARP_PROMPT_TEX_HEIGHT) << 2,
-                        G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
+        gDPLoadTextureBlock(POLY_OPA_DISP++, gWarpPromptTex + (i * WARP_PROMPT_TEX_WIDTH * WARP_PROMPT_STRIP_ROWS),
+                            G_IM_FMT_IA, G_IM_SIZ_8b, WARP_PROMPT_TEX_WIDTH, WARP_PROMPT_STRIP_ROWS, 0,
+                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
+                            G_TX_NOLOD);
+
+        gSPTextureRectangle(POLY_OPA_DISP++, WARP_PROMPT_SCR_X << 2, sy << 2,
+                            (WARP_PROMPT_SCR_X + WARP_PROMPT_SCR_W) << 2, (sy + stripScrH) << 2, G_TX_RENDERTILE, 0, 0,
+                            dsdx, dtdy);
+    }
 
     gDPPipeSync(POLY_OPA_DISP++);
 
