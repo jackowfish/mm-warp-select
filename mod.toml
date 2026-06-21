@@ -1,7 +1,7 @@
 # Config file for the Warp From Map mod for Majora's Mask: Recompiled.
 
 [manifest]
-id = "jackdecker_warp_from_map"
+id = "mm_recomp_warp_from_map"
 version = "1.0.0"
 display_name = "Warp From Map"
 description = """
@@ -22,7 +22,7 @@ native_libraries = [ ]
 
 [inputs]
 elf_path = "build/mod.elf"
-mod_filename = "jackdecker_warp_from_map"
+mod_filename = "warp_from_map"
 func_reference_syms_file = "Zelda64RecompSyms/mm.us.rev1.syms.toml"
 data_reference_syms_files = [ "Zelda64RecompSyms/mm.us.rev1.datasyms.toml", "Zelda64RecompSyms/mm.us.rev1.datasyms_static.toml" ]
 additional_files = [ ]

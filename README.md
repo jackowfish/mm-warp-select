@@ -16,5 +16,5 @@ Needs LLVM `clang` + `ld.lld` (Apple clang won't work) and
 [`RecompModTool`](https://github.com/N64Recomp/N64Recomp). Symlink or submodule `mm-decomp`
 ([zeldaret/mm](https://github.com/zeldaret/mm)) and `Zelda64RecompSyms`
 ([Zelda64Recomp/Zelda64RecompSyms](https://github.com/Zelda64Recomp/Zelda64RecompSyms)) at the repo
-root, then run `./build.sh` to produce `build/jackdecker_warp_from_map.nrm`. Drag that onto the game
-window to install.
+root, then run `./build.sh` to produce `build/warp_from_map.nrm`. Drag that onto the game window to
+install.
