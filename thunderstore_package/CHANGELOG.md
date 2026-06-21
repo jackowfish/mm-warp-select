@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.3
+- Nudge the on-screen prompt down and to the right so it sits beside the MAP header.
+
 ## 1.0.2
 - Move the on-screen prompt to the top-left of the map page (left of the MAP header)
   and draw it in black.

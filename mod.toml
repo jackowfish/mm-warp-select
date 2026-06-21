@@ -2,7 +2,7 @@
 
 [manifest]
 id = "mm_recomp_warp_select"
-version = "1.0.2"
+version = "1.0.3"
 display_name = "Warp Select"
 description = """
 Select a Song of Soaring destination straight from the world map in the pause menu \
