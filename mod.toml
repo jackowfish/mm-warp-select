@@ -25,7 +25,7 @@ elf_path = "build/mod.elf"
 mod_filename = "warp_from_map"
 func_reference_syms_file = "Zelda64RecompSyms/mm.us.rev1.syms.toml"
 data_reference_syms_files = [ "Zelda64RecompSyms/mm.us.rev1.datasyms.toml", "Zelda64RecompSyms/mm.us.rev1.datasyms_static.toml" ]
-additional_files = [ ]
+additional_files = [ "thumb.png" ]
 
 [[manifest.config_options]]
 id = "toggle_button"
