@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+- Nudge the on-screen prompt up by 5 pixels.
+
 ## 1.0.3
 - Nudge the on-screen prompt down and to the right so it sits beside the MAP header.
 

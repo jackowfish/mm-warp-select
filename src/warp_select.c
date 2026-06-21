@@ -149,7 +149,7 @@ RECOMP_HOOK("KaleidoScopeCall_Update") void warp_select_update(PlayState* play) 
 #define WARP_PROMPT_SCR_W 128
 #define WARP_PROMPT_SCR_H 16
 #define WARP_PROMPT_SCR_X 51
-#define WARP_PROMPT_SCR_Y 48
+#define WARP_PROMPT_SCR_Y 43
 // Upload the texture in 8-row strips so each TMEM tile stays well under the 4 KB limit.
 #define WARP_PROMPT_STRIP_ROWS 8
 #define WARP_PROMPT_STRIPS (WARP_PROMPT_TEX_HEIGHT / WARP_PROMPT_STRIP_ROWS)
