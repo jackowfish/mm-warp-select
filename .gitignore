@@ -22,3 +22,8 @@ tools/prompt_preview*.png
 
 # Prebuilt RecompModTool (host binary, not source)
 tools/RecompModTool
+
+# Generated Thunderstore artifacts
+*.thunderstore.zip
+thunderstore_package/manifest.json
+thunderstore_package/*.nrm
