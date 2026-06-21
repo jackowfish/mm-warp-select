@@ -16,12 +16,23 @@
 #include "recomputils.h"
 #include "recompconfig.h"
 
+// Pulled in only for the compile-time PAUSE_*/OWL_WARP_* enum constants. We never
+// reference any symbol that lives in the overlay at runtime (see note below).
 #include "overlays/kaleido_scope/ovl_kaleido_scope/z_kaleido_scope.h"
 
 #include "warp_prompt_tex.h"
 
-// Static game symbol not declared in any header; resolved from the reference syms.
-extern s16 sInDungeonScene;
+// The pause menu's update/draw entry points are *resident* wrappers in main `code`
+// (KaleidoScopeCall_Update / KaleidoScopeCall_Draw). The functions they dispatch to
+// live in the relocatable ovl_kaleido_scope overlay, which is only mapped while the
+// menu is open, so hooking the overlay functions directly (or reading overlay data
+// like sInDungeonScene) resolves against an unloaded overlay and crashes on load.
+// We hook only the resident wrappers and touch only resident state (PlayState fields,
+// gSaveContext, and resident helpers), so nothing here depends on the overlay layout.
+
+// Captured each frame from the resident update wrapper so the draw wrapper (whose
+// return-hook argument registers aren't guaranteed) has a valid PlayState to draw with.
+static PlayState* sPlay = NULL;
 
 // Which C button toggles warp mode. Index matches the mod.toml "toggle_button" enum.
 static u16 get_toggle_btn(void) {
@@ -38,7 +49,7 @@ static u16 get_toggle_btn(void) {
 static s32 can_enter_warp(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     return (pauseCtx->state == PAUSE_STATE_MAIN) && (pauseCtx->mainState == PAUSE_MAIN_STATE_IDLE) &&
-           (pauseCtx->pageIndex == PAUSE_MAP) && !sInDungeonScene &&
+           (pauseCtx->pageIndex == PAUSE_MAP) &&
            (gSaveContext.save.saveInfo.playerData.owlActivationFlags != 0) &&
            (play->interfaceCtx.restrictions.songOfSoaring == 0);
 }
@@ -109,11 +120,14 @@ static void exit_warp_select(PlayState* play) {
     Audio_PlaySfx(NA_SE_SY_CANCEL);
 }
 
-// Runs before the pause menu's per-frame update.
-RECOMP_HOOK("KaleidoScope_Update") void warp_select_update(PlayState* play) {
+// Runs before the pause menu's per-frame update. KaleidoScopeCall_Update is the
+// resident wrapper (always mapped), unlike the overlay's KaleidoScope_Update.
+RECOMP_HOOK("KaleidoScopeCall_Update") void warp_select_update(PlayState* play) {
     PauseContext* pauseCtx = &play->pauseCtx;
     Input* input = CONTROLLER1(&play->state);
     u16 toggle = get_toggle_btn();
+
+    sPlay = play;
 
     if (can_enter_warp(play) && CHECK_BTN_ALL(input->press.button, toggle)) {
         enter_warp_select(play);
@@ -157,12 +171,17 @@ static void draw_prompt(PlayState* play) {
     CLOSE_DISPS(play->state.gfxCtx);
 }
 
-// Runs after the world map page finishes drawing, so our prompt lands on top.
-RECOMP_HOOK_RETURN("KaleidoScope_DrawWorldMap") void warp_select_draw(PlayState* play) {
+// Runs after the resident draw wrapper finishes, so our prompt sits on top of the
+// fully-drawn pause menu. KaleidoScopeCall_Draw is resident; we use the PlayState
+// captured in the update hook rather than this return hook's arguments.
+RECOMP_HOOK_RETURN("KaleidoScopeCall_Draw") void warp_select_draw(void) {
+    if (sPlay == NULL) {
+        return;
+    }
     if (recomp_get_config_u32("show_prompt") != 0) { // 0 = Shown
         return;
     }
-    if (can_enter_warp(play)) {
-        draw_prompt(play);
+    if (can_enter_warp(sPlay)) {
+        draw_prompt(sPlay);
     }
 }
