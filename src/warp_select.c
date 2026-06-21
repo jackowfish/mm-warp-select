@@ -34,6 +34,10 @@
 // return-hook argument registers aren't guaranteed) has a valid PlayState to draw with.
 static PlayState* sPlay = NULL;
 
+// True while a selection started from the pause map is in progress. Gates trigger_warp so
+// we never interfere with an actual Song of Soaring (where the player consumes ocarinaMode).
+static s32 sFromMapWarp = false;
+
 // Which C button toggles warp mode. Index matches the mod.toml "toggle_button" enum.
 static u16 get_toggle_btn(void) {
     switch (recomp_get_config_u32("toggle_button")) {
@@ -91,6 +95,7 @@ static void enter_warp_select(PlayState* play) {
     pauseCtx->mainState = PAUSE_MAIN_STATE_IDLE;
     pauseCtx->promptChoice = PAUSE_PROMPT_YES;
     pauseCtx->state = PAUSE_STATE_OWL_WARP_SELECT;
+    sFromMapWarp = true;
 
     Audio_PlaySfx(NA_SE_SY_DECIDE);
 }
@@ -116,8 +121,47 @@ static void exit_warp_select(PlayState* play) {
     pauseCtx->cursorColorSet = PAUSE_CURSOR_COLOR_SET_WHITE;
     pauseCtx->mainState = PAUSE_MAIN_STATE_IDLE;
     pauseCtx->state = PAUSE_STATE_MAIN;
+    sFromMapWarp = false;
 
     Audio_PlaySfx(NA_SE_SY_CANCEL);
+}
+
+// Owl-warp destinations, indexed by OwlWarpId. Mirrors sOwlWarpEntrances in ovl_En_Test7,
+// the actor the Song of Soaring normally spawns to perform the warp.
+static const u16 sOwlWarpEntrances[] = {
+    ENTRANCE(GREAT_BAY_COAST, 11),         // OWL_WARP_GREAT_BAY_COAST
+    ENTRANCE(ZORA_CAPE, 6),                // OWL_WARP_ZORA_CAPE
+    ENTRANCE(SNOWHEAD, 3),                 // OWL_WARP_SNOWHEAD
+    ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8),  // OWL_WARP_MOUNTAIN_VILLAGE
+    ENTRANCE(SOUTH_CLOCK_TOWN, 9),         // OWL_WARP_CLOCK_TOWN
+    ENTRANCE(MILK_ROAD, 4),                // OWL_WARP_MILK_ROAD
+    ENTRANCE(WOODFALL, 4),                 // OWL_WARP_WOODFALL
+    ENTRANCE(SOUTHERN_SWAMP_POISONED, 10), // OWL_WARP_SOUTHERN_SWAMP
+    ENTRANCE(IKANA_CANYON, 4),             // OWL_WARP_IKANA_CANYON
+    ENTRANCE(STONE_TOWER, 3),              // OWL_WARP_STONE_TOWER
+};
+
+// Actually perform the warp. The native owl-warp confirm only sets msgCtx.ocarinaMode,
+// which is normally consumed by the player's ocarina action (it spawns En_Test7 to run the
+// feather cutscene and trigger the transition). Because we open the selector from the pause
+// map instead of by playing the song, the player is never in that action and nothing reads
+// ocarinaMode, so we replicate En_Test7's transition setup here.
+static void trigger_warp(PlayState* play, s32 owlWarpId) {
+    u16 entrance = sOwlWarpEntrances[owlWarpId];
+
+    if ((entrance == ENTRANCE(SOUTHERN_SWAMP_POISONED, 10)) &&
+        CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_WOODFALL_TEMPLE)) {
+        entrance = ENTRANCE(SOUTHERN_SWAMP_CLEARED, 10);
+    } else if ((entrance == ENTRANCE(MOUNTAIN_VILLAGE_WINTER, 8)) &&
+               CHECK_WEEKEVENTREG(WEEKEVENTREG_CLEARED_SNOWHEAD_TEMPLE)) {
+        entrance = ENTRANCE(MOUNTAIN_VILLAGE_SPRING, 8);
+    }
+
+    play->nextEntrance = entrance;
+    play->transitionTrigger = TRANS_TRIGGER_START;
+    play->transitionType = TRANS_TYPE_FADE_BLACK;
+    gSaveContext.seqId = (u8)NA_BGM_DISABLED;
+    gSaveContext.ambienceId = AMBIENCE_ID_DISABLED;
 }
 
 // Runs before the pause menu's per-frame update. KaleidoScopeCall_Update is the
@@ -128,6 +172,26 @@ RECOMP_HOOK("KaleidoScopeCall_Update") void warp_select_update(PlayState* play) 
     u16 toggle = get_toggle_btn();
 
     sPlay = play;
+
+    // If we opened the selector from the map and the native confirm has set an owl-warp
+    // ocarina mode, perform the warp ourselves (the player can't, see trigger_warp).
+    if (sFromMapWarp) {
+        u16 ocarinaMode = play->msgCtx.ocarinaMode;
+
+        if ((ocarinaMode >= OCARINA_MODE_WARP_TO_GREAT_BAY_COAST) &&
+            (ocarinaMode <= OCARINA_MODE_WARP_TO_STONE_TOWER)) {
+            trigger_warp(play, ocarinaMode - OCARINA_MODE_WARP_TO_GREAT_BAY_COAST);
+            play->msgCtx.ocarinaMode = OCARINA_MODE_END;
+            sFromMapWarp = false;
+            return;
+        }
+
+        // Left the selector without warping (backed out or closed the menu): stop watching
+        // so a later real Song of Soaring is never affected.
+        if ((pauseCtx->state == PAUSE_STATE_MAIN) || (pauseCtx->state == PAUSE_STATE_OFF)) {
+            sFromMapWarp = false;
+        }
+    }
 
     if (can_enter_warp(play) && CHECK_BTN_ALL(input->press.button, toggle)) {
         enter_warp_select(play);

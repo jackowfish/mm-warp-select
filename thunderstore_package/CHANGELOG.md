@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+- Fix confirming a destination doing nothing. Selecting a warp from the map now actually
+  warps you, instead of just closing the menu.
+
 ## 1.0.4
 - Nudge the on-screen prompt up by 5 pixels.
 
