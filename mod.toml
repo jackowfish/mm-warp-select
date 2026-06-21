@@ -1,0 +1,44 @@
+# Config file for the Warp From Map mod for Majora's Mask: Recompiled.
+
+[manifest]
+id = "jackdecker_warp_from_map"
+version = "1.0.0"
+display_name = "Warp From Map"
+description = """
+Select a Song of Soaring destination straight from the world map in the pause menu \
+instead of playing the song.
+
+Open the pause menu, go to the map page, and press C-Down (configurable) to switch the \
+map into warp mode. Only owl statues you've activated are selectable. Move the cursor \
+with the control stick, press A to warp, and press C-Down or B to switch back to the \
+normal map. The original map is left untouched."""
+short_description = "Pick Song of Soaring warp points from the pause-menu map."
+authors = [ "Jack Decker" ]
+game_id = "mm"
+minimum_recomp_version = "1.2.2"
+dependencies = [ ]
+optional_dependencies = [ ]
+native_libraries = [ ]
+
+[inputs]
+elf_path = "build/mod.elf"
+mod_filename = "jackdecker_warp_from_map"
+func_reference_syms_file = "Zelda64RecompSyms/mm.us.rev1.syms.toml"
+data_reference_syms_files = [ "Zelda64RecompSyms/mm.us.rev1.datasyms.toml", "Zelda64RecompSyms/mm.us.rev1.datasyms_static.toml" ]
+additional_files = [ ]
+
+[[manifest.config_options]]
+id = "toggle_button"
+name = "Warp Map Button"
+description = "Which button switches the map page into warp mode (and back)."
+type = "Enum"
+options = [ "C-Down", "C-Up", "C-Left", "C-Right" ]
+default = "C-Down"
+
+[[manifest.config_options]]
+id = "show_prompt"
+name = "On-screen Prompt"
+description = "Show the 'C-Down: Warp Map' hint on the map page."
+type = "Enum"
+options = [ "Shown", "Hidden" ]
+default = "Shown"

@@ -1,0 +1,21 @@
+*.d
+*.o
+*.elf
+*.bin
+*.exe
+*.dll
+*.lib
+*.pdb
+*.exp
+./funcs.h
+patches.map
+build/
+.vscode/settings.json
+*.nrm
+
+# Local decomp / syms checkouts (symlinks or submodules) - set up per the README.
+/mm-decomp
+/Zelda64RecompSyms
+
+# Texture generator previews
+tools/prompt_preview*.png
